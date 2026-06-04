@@ -178,36 +178,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, [clearAuthState, loadPerfil]);
 
-  const signIn = async (email: string, password: string) => {
-    integrityToastShownRef.current = false;
-    let { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    // Se falhar o login, tenta criar a conta independentemente da mensagem de erro
-    if (error) {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: email.split("@")[0] } },
-      });
-
-      if (!signUpError && signUpData.user) {
-        // Conta criada com sucesso.
-        // Se a confirmação de e-mail estiver desativada no Supabase, ele loga na hora e o error fica null
-        if (signUpData.session) {
-          error = null;
-        } else {
-          return {
-            error:
-              "Conta criada! Por favor, verifique a caixa de entrada (ou spam) do seu e-mail marcosyuriaraujosouza@gmail.com para clicar no link de confirmação.",
-          };
-        }
-      } else if (signUpError) {
-        return {
-          error: `Tentamos criar a conta automaticamente mas falhou: ${signUpError.message}`,
-        };
-      }
-    }
-
+  const signIn = async (email?: string, password?: string) => {
+    if (!email || !password) return { error: "Email e senha são obrigatórios" };
+    
+    // Attempt standard sign in
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    
     return { error: error?.message ?? null };
   };
 
