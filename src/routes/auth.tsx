@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
 
 const schema = z.object({
   email: z.string().email("E-mail inválido").max(255),
@@ -37,7 +38,8 @@ function AuthPage() {
 
   const onSubmit = async (values: FormValues) => {
     setSubmitting(true);
-    const { error } = await signIn(values.email, values.password);
+    const emailStr = values.email.trim();
+    const { error } = await signIn(emailStr, values.password);
     setSubmitting(false);
     if (error) {
       toast.error("Acesso negado", {
@@ -48,6 +50,28 @@ function AuthPage() {
     }
     toast.success("Sessão iniciada");
     navigate({ to: "/dashboard", replace: true });
+  };
+
+  const onSignUp = async () => {
+    const emailStr = document.querySelector<HTMLInputElement>("#email")?.value.trim();
+    const passwordStr = document.querySelector<HTMLInputElement>("#password")?.value;
+    if (!emailStr || !passwordStr) {
+      toast.error("Preencha email e senha para criar a conta!");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.auth.signUp({
+      email: emailStr,
+      password: passwordStr,
+      options: { data: { full_name: emailStr.split("@")[0] } },
+    });
+    setSubmitting(false);
+
+    if (error) {
+      toast.error("Erro ao criar conta", { description: error.message, duration: 15000 });
+    } else {
+      toast.success("Conta criada! Tente logar agora ou verifique seu e-mail.");
+    }
   };
 
   return (
@@ -83,10 +107,21 @@ function AuthPage() {
               <p className="mt-1 text-xs text-destructive">{errors.password.message}</p>
             )}
           </div>
-          <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            ENTRAR (VERSÃO ATUALIZADA)
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              ENTRAR
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={onSignUp}
+              disabled={submitting}
+            >
+              CRIAR CONTA MANUALMENTE
+            </Button>
+          </div>
         </form>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
