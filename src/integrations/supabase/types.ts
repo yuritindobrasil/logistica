@@ -14,16 +14,157 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clientes: {
+        Row: {
+          codigo_cliente: string
+          data_cadastro: string
+          id: string
+          razao_social: string
+          usuario_criador_id: string | null
+        }
+        Insert: {
+          codigo_cliente: string
+          data_cadastro?: string
+          id?: string
+          razao_social: string
+          usuario_criador_id?: string | null
+        }
+        Update: {
+          codigo_cliente?: string
+          data_cadastro?: string
+          id?: string
+          razao_social?: string
+          usuario_criador_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clientes_usuario_criador_id_fkey"
+            columns: ["usuario_criador_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_perfis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      configuracoes_globais: {
+        Row: {
+          chave: string
+          descricao: string | null
+          id: string
+          updated_at: string
+          valor: Json
+        }
+        Insert: {
+          chave: string
+          descricao?: string | null
+          id?: string
+          updated_at?: string
+          valor: Json
+        }
+        Update: {
+          chave?: string
+          descricao?: string | null
+          id?: string
+          updated_at?: string
+          valor?: Json
+        }
+        Relationships: []
+      }
+      permissoes_individuais: {
+        Row: {
+          id: string
+          pode_avancar_etapa: boolean
+          pode_cadastrar_clientes: boolean
+          pode_cancelar_nf: boolean
+          pode_solicitar_compra: boolean
+          pode_ver_obs_privadas: boolean
+          updated_at: string
+          usuario_id: string
+        }
+        Insert: {
+          id?: string
+          pode_avancar_etapa?: boolean
+          pode_cadastrar_clientes?: boolean
+          pode_cancelar_nf?: boolean
+          pode_solicitar_compra?: boolean
+          pode_ver_obs_privadas?: boolean
+          updated_at?: string
+          usuario_id: string
+        }
+        Update: {
+          id?: string
+          pode_avancar_etapa?: boolean
+          pode_cadastrar_clientes?: boolean
+          pode_cancelar_nf?: boolean
+          pode_solicitar_compra?: boolean
+          pode_ver_obs_privadas?: boolean
+          updated_at?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permissoes_individuais_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: true
+            referencedRelation: "usuarios_perfis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      usuarios_perfis: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nome_completo: string
+          role: Database["public"]["Enums"]["app_role"]
+          status: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          nome_completo: string
+          role?: Database["public"]["Enums"]["app_role"]
+          status?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nome_completo?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          status?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_permissao: {
+        Args: { _permissao: string; _user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin_or_dev: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "desenvolvedor" | "admin" | "gestor" | "logistica" | "vendedor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +291,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["desenvolvedor", "admin", "gestor", "logistica", "vendedor"],
+    },
   },
 } as const
