@@ -182,11 +182,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     integrityToastShownRef.current = false;
     let { error } = await supabase.auth.signInWithPassword({ email, password });
 
-    // Se a conta não existir (Invalid login credentials), tentar criar automaticamente
-    if (
-      error &&
-      (error.message.includes("Invalid login credentials") || error.message.includes("credenciais"))
-    ) {
+    // Se falhar o login, tenta criar a conta independentemente da mensagem de erro
+    if (error) {
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
