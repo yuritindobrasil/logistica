@@ -1,13 +1,13 @@
-import { type ReactNode, useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner';
-import { useAuth } from '@/hooks/useAuth';
-import type { AppRole, PermissoesIndividuais } from '@/types/domain';
+import { type ReactNode, useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import type { AppRole, PermissoesIndividuais } from "@/types/domain";
 
 interface GuardProps {
   children: ReactNode;
   roles?: AppRole[];
-  permissao?: keyof Omit<PermissoesIndividuais, 'id' | 'usuario_id' | 'updated_at'>;
+  permissao?: keyof Omit<PermissoesIndividuais, "id" | "usuario_id" | "updated_at">;
 }
 
 /** HOC de proteção: valida JWT + Role + Permissão Individual. */
@@ -18,7 +18,7 @@ export function RouteGuard({ children, roles, permissao }: GuardProps) {
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      navigate({ to: '/auth', replace: true });
+      navigate({ to: "/auth", replace: true });
       return;
     }
     if (!perfil) return;
@@ -31,10 +31,10 @@ export function RouteGuard({ children, roles, permissao }: GuardProps) {
       allowed = hasPermissao(permissao);
     }
     if (!allowed) {
-      toast.error('Violação de acesso', {
-        description: 'Você não possui permissão para acessar este recurso.',
+      toast.error("Violação de acesso", {
+        description: "Você não possui permissão para acessar este recurso.",
       });
-      navigate({ to: '/dashboard', replace: true });
+      navigate({ to: "/dashboard", replace: true });
     }
   }, [loading, user, perfil, roles, permissao, hasRole, hasPermissao, isAdminOrDev, navigate]);
 

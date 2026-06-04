@@ -1,4 +1,4 @@
-export type AppRole = 'desenvolvedor' | 'admin' | 'gestor' | 'logistica' | 'vendedor';
+export type AppRole = "desenvolvedor" | "admin" | "gestor" | "logistica" | "vendedor";
 
 export interface UsuarioPerfil {
   id: string;
@@ -37,16 +37,16 @@ export interface Cliente {
   data_cadastro: string;
 }
 
-export type StatusPedido = 
-  | 'Aguardando Separação'
-  | 'Em Separação'
-  | 'Em Conferência'
-  | 'Alteração de Pedido'
-  | 'Aguardando Compra'
-  | 'Faturamento'
-  | 'Em Rota'
-  | 'Entregue'
-  | 'Cancelado';
+export type StatusPedido =
+  | "Aguardando Separação"
+  | "Em Separação"
+  | "Em Conferência"
+  | "Alteração de Pedido"
+  | "Aguardando Compra"
+  | "Faturamento"
+  | "Em Rota"
+  | "Entregue"
+  | "Cancelado";
 
 export interface Pedido {
   id: string;
@@ -92,11 +92,11 @@ export interface FaixasEficiencia {
 }
 
 export const ROLE_LABELS: Record<AppRole, string> = {
-  desenvolvedor: 'Desenvolvedor',
-  admin: 'Administrador',
-  gestor: 'Gestor',
-  logistica: 'Logística',
-  vendedor: 'Vendedor',
+  desenvolvedor: "Desenvolvedor",
+  admin: "Administrador",
+  gestor: "Gestor",
+  logistica: "Logística",
+  vendedor: "Vendedor",
 };
 
-export const ROLES: AppRole[] = ['desenvolvedor', 'admin', 'gestor', 'logistica', 'vendedor'];
+export const ROLES: AppRole[] = ["desenvolvedor", "admin", "gestor", "logistica", "vendedor"];
