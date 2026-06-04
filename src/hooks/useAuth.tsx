@@ -79,16 +79,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               .maybeSingle(),
           ]);
 
-        if (perfilError || permissoesError || !p || !perm) {
-          throw (
-            perfilError ??
-            permissoesError ??
-            new Error("Perfil ou permissões não encontrados para o usuário autenticado.")
-          );
+        if (perfilError || permissoesError) {
+          throw perfilError ?? permissoesError;
         }
 
-        setPerfil(p as UsuarioPerfil);
-        setPermissoes(perm as PermissoesIndividuais);
+        let finalP = p;
+        let finalPerm = perm;
+
+        if (!p) {
+          const { data: userData } = await supabase.auth.getUser();
+          const email = userData.user?.email || "";
+          const role = email === "marcosyuriaraujosouza@gmail.com" ? "desenvolvedor" : "vendedor";
+
+          const { data: newP, error: errP } = await supabase
+            .from("usuarios_perfis" as never)
+            .insert({
+              id: uid,
+              email: email,
+              nome_completo: email.split("@")[0],
+              role: role,
+              status: true,
+            } as never)
+            .select()
+            .single();
+          if (errP) throw errP;
+          finalP = newP;
+        }
+
+        if (!perm) {
+          const { data: newPerm, error: errPerm } = await supabase
+            .from("permissoes_individuais" as never)
+            .insert({
+              usuario_id: uid,
+              pode_avancar_etapa: true,
+              pode_ver_obs_privadas: true,
+              pode_cadastrar_clientes: true,
+              pode_solicitar_compra: true,
+              pode_cancelar_nf: true,
+            } as never)
+            .select()
+            .single();
+          if (errPerm) throw errPerm;
+          finalPerm = newPerm;
+        }
+
+        setPerfil(finalP as UsuarioPerfil);
+        setPermissoes(finalPerm as PermissoesIndividuais);
       } catch (error) {
         await handleProfileIntegrityFailure(error);
       }
