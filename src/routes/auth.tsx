@@ -77,7 +77,14 @@ function AuthPage() {
     setSubmitting(false);
 
     if (error) {
-      toast.error("Erro ao criar conta", { description: error.message, duration: 15000 });
+      if (error.message.includes("weak")) {
+        toast.error("SENHA MUITO FRACA!", {
+          description: "O sistema recusou sua senha. Use algo mais forte, ex: Logistica@2026Yuri!",
+          duration: 20000,
+        });
+      } else {
+        toast.error("Erro ao criar conta", { description: error.message, duration: 15000 });
+      }
     } else if (data.session) {
       toast.success("Conta criada e sessão ativada com sucesso! Redirecionando...");
       navigate({ to: "/dashboard", replace: true });
@@ -87,6 +94,38 @@ function AuthPage() {
           "Você precisa desligar a chave 'Confirm email' no painel do Supabase, depois apagar a conta e tentar de novo.",
         duration: 20000,
       });
+    }
+  };
+
+  const onTestLogin = async () => {
+    setSubmitting(true);
+    const testEmail = "admin@logistica.com";
+    const testPass = "Logistica@2026Yuri!";
+
+    // Tenta logar primeiro
+    const { error: loginError } = await signIn(testEmail, testPass);
+
+    if (!loginError) {
+      toast.success("Sessão iniciada como Administrador de Teste");
+      navigate({ to: "/dashboard", replace: true });
+      return;
+    }
+
+    // Se falhar, tenta criar a conta de teste
+    const { data, error } = await supabase.auth.signUp({
+      email: testEmail,
+      password: testPass,
+      options: { data: { full_name: "Administrador de Teste" } },
+    });
+    setSubmitting(false);
+
+    if (error) {
+      toast.error("Erro ao criar conta de teste", { description: error.message, duration: 15000 });
+    } else if (data.session) {
+      toast.success("Conta de teste criada e ativada! Redirecionando...");
+      navigate({ to: "/dashboard", replace: true });
+    } else {
+      toast.error("Erro: Confirmação de e-mail ainda está ativada no banco de dados.");
     }
   };
 
@@ -136,6 +175,15 @@ function AuthPage() {
               disabled={submitting}
             >
               CRIAR CONTA MANUALMENTE
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-full mt-4 border-2 border-primary"
+              onClick={onTestLogin}
+              disabled={submitting}
+            >
+              LOGIN DE EMERGÊNCIA (TESTE)
             </Button>
           </div>
         </form>
