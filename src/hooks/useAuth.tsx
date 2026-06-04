@@ -48,47 +48,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setPermissoes(null);
   }, []);
 
-  const handleProfileIntegrityFailure = useCallback(async (error: unknown) => {
-    console.error("[Auth] Falha de integridade ao carregar perfil/permissões:", error);
-    clearAuthState();
-    setLoading(false);
-    if (!integrityToastShownRef.current) {
-      integrityToastShownRef.current = true;
-      toast.error(PROFILE_INTEGRITY_MESSAGE);
-    }
-    await supabase.auth.signOut();
-  }, [clearAuthState]);
-
-  const loadPerfil = useCallback(async (uid: string) => {
-    try {
-      const [{ data: p, error: perfilError }, { data: perm, error: permissoesError }] =
-        await Promise.all([
-          supabase
-            .from("usuarios_perfis" as never)
-            .select("*")
-            .eq("id", uid)
-            .maybeSingle(),
-          supabase
-            .from("permissoes_individuais" as never)
-            .select("*")
-            .eq("usuario_id", uid)
-            .maybeSingle(),
-        ]);
-
-      if (perfilError || permissoesError || !p || !perm) {
-        throw (
-          perfilError ??
-          permissoesError ??
-          new Error("Perfil ou permissões não encontrados para o usuário autenticado.")
-        );
+  const handleProfileIntegrityFailure = useCallback(
+    async (error: unknown) => {
+      console.error("[Auth] Falha de integridade ao carregar perfil/permissões:", error);
+      clearAuthState();
+      setLoading(false);
+      if (!integrityToastShownRef.current) {
+        integrityToastShownRef.current = true;
+        toast.error(PROFILE_INTEGRITY_MESSAGE);
       }
+      await supabase.auth.signOut();
+    },
+    [clearAuthState],
+  );
 
-      setPerfil(p as UsuarioPerfil);
-      setPermissoes(perm as PermissoesIndividuais);
-    } catch (error) {
-      await handleProfileIntegrityFailure(error);
-    }
-  }, [handleProfileIntegrityFailure]);
+  const loadPerfil = useCallback(
+    async (uid: string) => {
+      try {
+        const [{ data: p, error: perfilError }, { data: perm, error: permissoesError }] =
+          await Promise.all([
+            supabase
+              .from("usuarios_perfis" as never)
+              .select("*")
+              .eq("id", uid)
+              .maybeSingle(),
+            supabase
+              .from("permissoes_individuais" as never)
+              .select("*")
+              .eq("usuario_id", uid)
+              .maybeSingle(),
+          ]);
+
+        if (perfilError || permissoesError || !p || !perm) {
+          throw (
+            perfilError ??
+            permissoesError ??
+            new Error("Perfil ou permissões não encontrados para o usuário autenticado.")
+          );
+        }
+
+        setPerfil(p as UsuarioPerfil);
+        setPermissoes(perm as PermissoesIndividuais);
+      } catch (error) {
+        await handleProfileIntegrityFailure(error);
+      }
+    },
+    [handleProfileIntegrityFailure],
+  );
 
   useEffect(() => {
     const {
@@ -166,7 +172,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ session, user, perfil, permissoes, loading, isAdminOrDev, hasRole, hasPermissao, signIn, signOut, refreshPerfil }}
+      value={{
+        session,
+        user,
+        perfil,
+        permissoes,
+        loading,
+        isAdminOrDev,
+        hasRole,
+        hasPermissao,
+        signIn,
+        signOut,
+        refreshPerfil,
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -175,6 +193,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth deve ser usado dentro de AuthProvider');
+  if (!ctx) throw new Error("useAuth deve ser usado dentro de AuthProvider");
   return ctx;
 }
