@@ -141,6 +141,135 @@ export type Database = {
         }
         Relationships: []
       }
+      pedidos: {
+        Row: {
+          id: string
+          numero_pedido_externo: string
+          cliente_id: string
+          vendedor_id: string
+          valor_total: number
+          status_atual: Database["public"]["Enums"]["status_pedido"]
+          observacoes_iniciais: string | null
+          criado_em: string
+        }
+        Insert: {
+          id?: string
+          numero_pedido_externo: string
+          cliente_id: string
+          vendedor_id: string
+          valor_total?: number
+          status_atual?: Database["public"]["Enums"]["status_pedido"]
+          observacoes_iniciais?: string | null
+          criado_em?: string
+        }
+        Update: {
+          id?: string
+          numero_pedido_externo?: string
+          cliente_id?: string
+          vendedor_id?: string
+          valor_total?: number
+          status_atual?: Database["public"]["Enums"]["status_pedido"]
+          observacoes_iniciais?: string | null
+          criado_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_vendedor_id_fkey"
+            columns: ["vendedor_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_perfis"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      logs_status: {
+        Row: {
+          id: string
+          pedido_id: string
+          etapa_nome: Database["public"]["Enums"]["status_pedido"]
+          data_hora_inicio: string
+          data_hora_fim: string | null
+          usuario_responsavel_id: string | null
+        }
+        Insert: {
+          id?: string
+          pedido_id: string
+          etapa_nome: Database["public"]["Enums"]["status_pedido"]
+          data_hora_inicio?: string
+          data_hora_fim?: string | null
+          usuario_responsavel_id?: string | null
+        }
+        Update: {
+          id?: string
+          pedido_id?: string
+          etapa_nome?: Database["public"]["Enums"]["status_pedido"]
+          data_hora_inicio?: string
+          data_hora_fim?: string | null
+          usuario_responsavel_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_status_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "logs_status_usuario_responsavel_id_fkey"
+            columns: ["usuario_responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_perfis"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      observacoes_operacionais: {
+        Row: {
+          id: string
+          pedido_id: string
+          usuario_id: string | null
+          texto_observacao: string
+          criado_em: string
+        }
+        Insert: {
+          id?: string
+          pedido_id: string
+          usuario_id?: string | null
+          texto_observacao: string
+          criado_em?: string
+        }
+        Update: {
+          id?: string
+          pedido_id?: string
+          usuario_id?: string | null
+          texto_observacao?: string
+          criado_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "observacoes_operacionais_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "observacoes_operacionais_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_perfis"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -162,9 +291,27 @@ export type Database = {
         Returns: boolean
       }
       is_admin_or_dev: { Args: { _user_id: string }; Returns: boolean }
+      fn_avancar_etapa_pedido: {
+        Args: {
+          p_pedido_id: string
+          p_novo_status: Database["public"]["Enums"]["status_pedido"]
+          p_usuario_id: string
+        }
+        Returns: void
+      }
     }
     Enums: {
       app_role: "desenvolvedor" | "admin" | "gestor" | "logistica" | "vendedor"
+      status_pedido:
+        | "Aguardando Separação"
+        | "Em Separação"
+        | "Em Conferência"
+        | "Alteração de Pedido"
+        | "Aguardando Compra"
+        | "Faturamento"
+        | "Em Rota"
+        | "Entregue"
+        | "Cancelado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -293,6 +440,17 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["desenvolvedor", "admin", "gestor", "logistica", "vendedor"],
+      status_pedido: [
+        "Aguardando Separação",
+        "Em Separação",
+        "Em Conferência",
+        "Alteração de Pedido",
+        "Aguardando Compra",
+        "Faturamento",
+        "Em Rota",
+        "Entregue",
+        "Cancelado",
+      ],
     },
   },
 } as const

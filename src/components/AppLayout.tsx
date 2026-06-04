@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
 import { type ReactNode } from 'react';
-import { LogOut, LayoutDashboard, Users, Settings2, Wrench, Building2 } from 'lucide-react';
+import { LogOut, LayoutDashboard, Users, Settings2, Wrench, Building2, Package, PackagePlus, Kanban } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { ROLE_LABELS } from '@/types/domain';
@@ -20,6 +20,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   const items: NavItem[] = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, show: true },
+    { to: '/pedidos/novo', label: 'Novo Pedido', icon: PackagePlus, show: isAdminOrDev || perfil?.role === 'vendedor' || perfil?.role === 'gestor' },
+    { to: '/pedidos/meus', label: 'Meus Pedidos', icon: Package, show: isAdminOrDev || perfil?.role === 'vendedor' || perfil?.role === 'gestor' },
+    { to: '/logistica/painel', label: 'Painel Operacional', icon: Kanban, show: isAdminOrDev || perfil?.role === 'logistica' || perfil?.role === 'gestor' },
     { to: '/clientes', label: 'Clientes', icon: Building2, show: isAdminOrDev || perfil?.role === 'vendedor' || hasPermissao('pode_cadastrar_clientes') },
     { to: '/admin/usuarios', label: 'Usuários', icon: Users, show: isAdminOrDev },
     { to: '/admin/permissoes-globais', label: 'Permissões', icon: Settings2, show: isAdminOrDev },

@@ -14,6 +14,9 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
+import { Route as AuthenticatedPedidosNovoRouteImport } from './routes/_authenticated/pedidos/novo'
+import { Route as AuthenticatedPedidosMeusRouteImport } from './routes/_authenticated/pedidos/meus'
+import { Route as AuthenticatedLogisticaPainelRouteImport } from './routes/_authenticated/logistica/painel'
 import { Route as AuthenticatedDevConfigRouteImport } from './routes/_authenticated/dev.config'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedAdminPermissoesGlobaisRouteImport } from './routes/_authenticated/admin.permissoes-globais'
@@ -42,6 +45,24 @@ const AuthenticatedClientesRoute = AuthenticatedClientesRouteImport.update({
   path: '/clientes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPedidosNovoRoute =
+  AuthenticatedPedidosNovoRouteImport.update({
+    id: '/pedidos/novo',
+    path: '/pedidos/novo',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPedidosMeusRoute =
+  AuthenticatedPedidosMeusRouteImport.update({
+    id: '/pedidos/meus',
+    path: '/pedidos/meus',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticaPainelRoute =
+  AuthenticatedLogisticaPainelRouteImport.update({
+    id: '/logistica/painel',
+    path: '/logistica/painel',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDevConfigRoute = AuthenticatedDevConfigRouteImport.update({
   id: '/dev/config',
   path: '/dev/config',
@@ -68,6 +89,9 @@ export interface FileRoutesByFullPath {
   '/admin/permissoes-globais': typeof AuthenticatedAdminPermissoesGlobaisRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/dev/config': typeof AuthenticatedDevConfigRoute
+  '/logistica/painel': typeof AuthenticatedLogisticaPainelRoute
+  '/pedidos/meus': typeof AuthenticatedPedidosMeusRoute
+  '/pedidos/novo': typeof AuthenticatedPedidosNovoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,6 +101,9 @@ export interface FileRoutesByTo {
   '/admin/permissoes-globais': typeof AuthenticatedAdminPermissoesGlobaisRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/dev/config': typeof AuthenticatedDevConfigRoute
+  '/logistica/painel': typeof AuthenticatedLogisticaPainelRoute
+  '/pedidos/meus': typeof AuthenticatedPedidosMeusRoute
+  '/pedidos/novo': typeof AuthenticatedPedidosNovoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,6 +115,9 @@ export interface FileRoutesById {
   '/_authenticated/admin/permissoes-globais': typeof AuthenticatedAdminPermissoesGlobaisRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/dev/config': typeof AuthenticatedDevConfigRoute
+  '/_authenticated/logistica/painel': typeof AuthenticatedLogisticaPainelRoute
+  '/_authenticated/pedidos/meus': typeof AuthenticatedPedidosMeusRoute
+  '/_authenticated/pedidos/novo': typeof AuthenticatedPedidosNovoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -99,6 +129,9 @@ export interface FileRouteTypes {
     | '/admin/permissoes-globais'
     | '/admin/usuarios'
     | '/dev/config'
+    | '/logistica/painel'
+    | '/pedidos/meus'
+    | '/pedidos/novo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -108,6 +141,9 @@ export interface FileRouteTypes {
     | '/admin/permissoes-globais'
     | '/admin/usuarios'
     | '/dev/config'
+    | '/logistica/painel'
+    | '/pedidos/meus'
+    | '/pedidos/novo'
   id:
     | '__root__'
     | '/'
@@ -118,6 +154,9 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/permissoes-globais'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/dev/config'
+    | '/_authenticated/logistica/painel'
+    | '/_authenticated/pedidos/meus'
+    | '/_authenticated/pedidos/novo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -163,6 +202,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pedidos/novo': {
+      id: '/_authenticated/pedidos/novo'
+      path: '/pedidos/novo'
+      fullPath: '/pedidos/novo'
+      preLoaderRoute: typeof AuthenticatedPedidosNovoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pedidos/meus': {
+      id: '/_authenticated/pedidos/meus'
+      path: '/pedidos/meus'
+      fullPath: '/pedidos/meus'
+      preLoaderRoute: typeof AuthenticatedPedidosMeusRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistica/painel': {
+      id: '/_authenticated/logistica/painel'
+      path: '/logistica/painel'
+      fullPath: '/logistica/painel'
+      preLoaderRoute: typeof AuthenticatedLogisticaPainelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dev/config': {
       id: '/_authenticated/dev/config'
       path: '/dev/config'
@@ -193,6 +253,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminPermissoesGlobaisRoute: typeof AuthenticatedAdminPermissoesGlobaisRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedDevConfigRoute: typeof AuthenticatedDevConfigRoute
+  AuthenticatedLogisticaPainelRoute: typeof AuthenticatedLogisticaPainelRoute
+  AuthenticatedPedidosMeusRoute: typeof AuthenticatedPedidosMeusRoute
+  AuthenticatedPedidosNovoRoute: typeof AuthenticatedPedidosNovoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -202,6 +265,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedAdminPermissoesGlobaisRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedDevConfigRoute: AuthenticatedDevConfigRoute,
+  AuthenticatedLogisticaPainelRoute: AuthenticatedLogisticaPainelRoute,
+  AuthenticatedPedidosMeusRoute: AuthenticatedPedidosMeusRoute,
+  AuthenticatedPedidosNovoRoute: AuthenticatedPedidosNovoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -215,3 +281,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

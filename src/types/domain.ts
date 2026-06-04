@@ -37,6 +37,52 @@ export interface Cliente {
   data_cadastro: string;
 }
 
+export type StatusPedido = 
+  | 'Aguardando Separação'
+  | 'Em Separação'
+  | 'Em Conferência'
+  | 'Alteração de Pedido'
+  | 'Aguardando Compra'
+  | 'Faturamento'
+  | 'Em Rota'
+  | 'Entregue'
+  | 'Cancelado';
+
+export interface Pedido {
+  id: string;
+  numero_pedido_externo: string;
+  cliente_id: string;
+  vendedor_id: string;
+  valor_total: number;
+  status_atual: StatusPedido;
+  observacoes_iniciais: string | null;
+  criado_em: string;
+  // For relations:
+  cliente?: Cliente;
+  vendedor?: UsuarioPerfil;
+}
+
+export interface LogStatus {
+  id: string;
+  pedido_id: string;
+  etapa_nome: StatusPedido;
+  data_hora_inicio: string;
+  data_hora_fim: string | null;
+  usuario_responsavel_id: string | null;
+  // For relations:
+  responsavel?: UsuarioPerfil;
+}
+
+export interface ObservacaoOperacional {
+  id: string;
+  pedido_id: string;
+  usuario_id: string | null;
+  texto_observacao: string;
+  criado_em: string;
+  // For relations:
+  usuario?: UsuarioPerfil;
+}
+
 export interface FaixasEficiencia {
   padrao: number;
   faixa_2: number;
