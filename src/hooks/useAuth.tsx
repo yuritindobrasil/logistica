@@ -1,10 +1,19 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import type { Session, User } from '@supabase/supabase-js';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import type { AppRole, PermissoesIndividuais, UsuarioPerfil } from '@/types/domain';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import type { Session, User } from "@supabase/supabase-js";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import type { AppRole, PermissoesIndividuais, UsuarioPerfil } from "@/types/domain";
 
-const PROFILE_INTEGRITY_MESSAGE = 'Erro de integridade de perfil. Usuário não possui dados na tabela de perfis.';
+const PROFILE_INTEGRITY_MESSAGE =
+  "Erro de integridade de perfil. Usuário não possui dados na tabela de perfis.";
 
 interface AuthContextValue {
   session: Session | null;
@@ -14,7 +23,9 @@ interface AuthContextValue {
   loading: boolean;
   isAdminOrDev: boolean;
   hasRole: (role: AppRole | AppRole[]) => boolean;
-  hasPermissao: (key: keyof Omit<PermissoesIndividuais, 'id' | 'usuario_id' | 'updated_at'>) => boolean;
+  hasPermissao: (
+    key: keyof Omit<PermissoesIndividuais, "id" | "usuario_id" | "updated_at">,
+  ) => boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshPerfil: () => Promise<void>;
@@ -30,15 +41,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const integrityToastShownRef = useRef(false);
 
-  const clearAuthState = () => {
+  const clearAuthState = useCallback(() => {
     setSession(null);
     setUser(null);
     setPerfil(null);
     setPermissoes(null);
-  };
+  }, []);
 
-  const handleProfileIntegrityFailure = async (error: unknown) => {
-    console.error('[Auth] Falha de integridade ao carregar perfil/permissões:', error);
+  const handleProfileIntegrityFailure = useCallback(async (error: unknown) => {
+    console.error("[Auth] Falha de integridade ao carregar perfil/permissões:", error);
     clearAuthState();
     setLoading(false);
     if (!integrityToastShownRef.current) {
@@ -46,25 +57,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       toast.error(PROFILE_INTEGRITY_MESSAGE);
     }
     await supabase.auth.signOut();
-  };
+  }, [clearAuthState]);
 
-  const loadPerfil = async (uid: string) => {
+  const loadPerfil = useCallback(async (uid: string) => {
     try {
-      const [{ data: p, error: perfilError }, { data: perm, error: permissoesError }] = await Promise.all([
-        supabase
-          .from('usuarios_perfis' as never)
-          .select('*')
-          .eq('id', uid)
-          .maybeSingle(),
-        supabase
-          .from('permissoes_individuais' as never)
-          .select('*')
-          .eq('usuario_id', uid)
-          .maybeSingle(),
-      ]);
+      const [{ data: p, error: perfilError }, { data: perm, error: permissoesError }] =
+        await Promise.all([
+          supabase
+            .from("usuarios_perfis" as never)
+            .select("*")
+            .eq("id", uid)
+            .maybeSingle(),
+          supabase
+            .from("permissoes_individuais" as never)
+            .select("*")
+            .eq("usuario_id", uid)
+            .maybeSingle(),
+        ]);
 
       if (perfilError || permissoesError || !p || !perm) {
-        throw perfilError ?? permissoesError ?? new Error('Perfil ou permissões não encontrados para o usuário autenticado.');
+        throw (
+          perfilError ??
+          permissoesError ??
+          new Error("Perfil ou permissões não encontrados para o usuário autenticado.")
+        );
       }
 
       setPerfil(p as UsuarioPerfil);
@@ -72,10 +88,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       await handleProfileIntegrityFailure(error);
     }
-  };
+  }, [handleProfileIntegrityFailure]);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
@@ -105,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(userData.user);
         await loadPerfil(userData.user.id);
       } catch (error) {
-        console.error('[Auth] Falha ao validar sessão inicial:', error);
+        console.error("[Auth] Falha ao validar sessão inicial:", error);
         clearAuthState();
         await supabase.auth.signOut();
       } finally {
@@ -116,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void validateInitialSession();
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [clearAuthState, loadPerfil]);
 
   const signIn = async (email: string, password: string) => {
     integrityToastShownRef.current = false;
@@ -140,11 +158,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return roles.includes(perfil.role);
   };
 
-  const hasPermissao: AuthContextValue['hasPermissao'] = (key) => {
+  const hasPermissao: AuthContextValue["hasPermissao"] = (key) => {
     return !!permissoes?.[key];
   };
 
-  const isAdminOrDev = !!perfil && (perfil.role === 'admin' || perfil.role === 'desenvolvedor');
+  const isAdminOrDev = !!perfil && (perfil.role === "admin" || perfil.role === "desenvolvedor");
 
   return (
     <AuthContext.Provider
