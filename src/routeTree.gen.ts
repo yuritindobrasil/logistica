@@ -16,6 +16,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedDevConfigRouteImport } from './routes/_authenticated/dev.config'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
+import { Route as AuthenticatedAdminPermissoesGlobaisRouteImport } from './routes/_authenticated/admin.permissoes-globais'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -52,12 +53,19 @@ const AuthenticatedAdminUsuariosRoute =
     path: '/admin/usuarios',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminPermissoesGlobaisRoute =
+  AuthenticatedAdminPermissoesGlobaisRouteImport.update({
+    id: '/admin/permissoes-globais',
+    path: '/admin/permissoes-globais',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/permissoes-globais': typeof AuthenticatedAdminPermissoesGlobaisRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/dev/config': typeof AuthenticatedDevConfigRoute
 }
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/permissoes-globais': typeof AuthenticatedAdminPermissoesGlobaisRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/dev/config': typeof AuthenticatedDevConfigRoute
 }
@@ -76,6 +85,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/admin/permissoes-globais': typeof AuthenticatedAdminPermissoesGlobaisRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/dev/config': typeof AuthenticatedDevConfigRoute
 }
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/clientes'
     | '/dashboard'
+    | '/admin/permissoes-globais'
     | '/admin/usuarios'
     | '/dev/config'
   fileRoutesByTo: FileRoutesByTo
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/clientes'
     | '/dashboard'
+    | '/admin/permissoes-globais'
     | '/admin/usuarios'
     | '/dev/config'
   id:
@@ -103,6 +115,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/clientes'
     | '/_authenticated/dashboard'
+    | '/_authenticated/admin/permissoes-globais'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/dev/config'
   fileRoutesById: FileRoutesById
@@ -164,12 +177,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/permissoes-globais': {
+      id: '/_authenticated/admin/permissoes-globais'
+      path: '/admin/permissoes-globais'
+      fullPath: '/admin/permissoes-globais'
+      preLoaderRoute: typeof AuthenticatedAdminPermissoesGlobaisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedAdminPermissoesGlobaisRoute: typeof AuthenticatedAdminPermissoesGlobaisRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedDevConfigRoute: typeof AuthenticatedDevConfigRoute
 }
@@ -177,6 +198,8 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedAdminPermissoesGlobaisRoute:
+    AuthenticatedAdminPermissoesGlobaisRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedDevConfigRoute: AuthenticatedDevConfigRoute,
 }
