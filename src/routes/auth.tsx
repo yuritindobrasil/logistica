@@ -43,10 +43,17 @@ function AuthPage() {
     const { error } = await signIn(emailStr, values.password);
     setSubmitting(false);
     if (error) {
-      toast.error("Acesso negado", {
-        description: `Detalhes: ${error}`,
-        duration: 15000,
-      });
+      if (error.includes("Email not confirmed")) {
+        toast.error("E-mail não confirmado no Supabase!", {
+          description: "Você desligou a confirmação, mas a sua conta antiga ainda está presa. Vá no Supabase > Authentication > Users, APAGUE o seu e-mail e clique em CRIAR CONTA MANUALMENTE aqui na tela.",
+          duration: 20000,
+        });
+      } else {
+        toast.error("Acesso negado", { 
+          description: `Detalhes: ${error}`,
+          duration: 15000,
+        });
+      }
       return;
     }
     toast.success("Sessão iniciada");
@@ -61,17 +68,23 @@ function AuthPage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signUp({
-      email: emailStr,
-      password: passwordStr,
-      options: { data: { full_name: emailStr.split("@")[0] } },
+    const { data, error } = await supabase.auth.signUp({
+       email: emailStr,
+       password: passwordStr,
+       options: { data: { full_name: emailStr.split("@")[0] } }
     });
     setSubmitting(false);
-
+    
     if (error) {
       toast.error("Erro ao criar conta", { description: error.message, duration: 15000 });
+    } else if (data.session) {
+      toast.success("Conta criada e sessão ativada com sucesso! Redirecionando...");
+      navigate({ to: "/dashboard", replace: true });
     } else {
-      toast.success("Conta criada! Tente logar agora ou verifique seu e-mail.");
+      toast.warning("Sua conta foi criada, mas o Supabase AINDA EXIGE CONFIRMAÇÃO DE E-MAIL!", {
+        description: "Você precisa desligar a chave 'Confirm email' no painel do Supabase, depois apagar a conta e tentar de novo.",
+        duration: 20000,
+      });
     }
   };
 
