@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Cliente } from "@/types/domain";
+import type { Cliente, Pedido } from "@/types/domain";
 
 const schema = z.object({
   numero_pedido_externo: z.string().min(1, "Número do pedido é obrigatório").max(50),
