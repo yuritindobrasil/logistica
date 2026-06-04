@@ -40,7 +40,10 @@ function AuthPage() {
     const { error } = await signIn(values.email, values.password);
     setSubmitting(false);
     if (error) {
-      toast.error("Acesso negado", { description: error });
+      toast.error("Acesso negado", {
+        description: `Detalhes: ${error}`,
+        duration: 15000,
+      });
       return;
     }
     toast.success("Sessão iniciada");

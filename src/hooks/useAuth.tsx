@@ -201,9 +201,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           return {
             error:
-              "Conta criada! Por favor, verifique seu e-mail para confirmar (se necessário) ou tente fazer login novamente.",
+              "Conta criada! Por favor, verifique a caixa de entrada (ou spam) do seu e-mail marcosyuriaraujosouza@gmail.com para clicar no link de confirmação.",
           };
         }
+      } else if (signUpError) {
+        return {
+          error: `Tentamos criar a conta automaticamente mas falhou: ${signUpError.message}`,
+        };
       }
     }
 
