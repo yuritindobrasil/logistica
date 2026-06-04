@@ -180,7 +180,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     integrityToastShownRef.current = false;
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    let { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    // Se a conta não existir (Invalid login credentials), tentar criar automaticamente
+    if (
+      error &&
+      (error.message.includes("Invalid login credentials") || error.message.includes("credenciais"))
+    ) {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: email.split("@")[0] } },
+      });
+
+      if (!signUpError && signUpData.user) {
+        // Conta criada com sucesso.
+        // Se a confirmação de e-mail estiver desativada no Supabase, ele loga na hora e o error fica null
+        if (signUpData.session) {
+          error = null;
+        } else {
+          return {
+            error:
+              "Conta criada! Por favor, verifique seu e-mail para confirmar (se necessário) ou tente fazer login novamente.",
+          };
+        }
+      }
+    }
+
     return { error: error?.message ?? null };
   };
 
