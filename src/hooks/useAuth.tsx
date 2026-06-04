@@ -123,8 +123,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           finalPerm = newPerm;
         }
 
-        setPerfil((finalP as unknown) as UsuarioPerfil);
-        setPermissoes((finalPerm as unknown) as PermissoesIndividuais);
+        setPerfil(finalP as unknown as UsuarioPerfil);
+        setPermissoes(finalPerm as unknown as PermissoesIndividuais);
       } catch (error) {
         await handleProfileIntegrityFailure(error);
       }
@@ -180,10 +180,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email?: string, password?: string) => {
     if (!email || !password) return { error: "Email e senha são obrigatórios" };
-    
+
     // Attempt standard sign in
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    
+
     return { error: error?.message ?? null };
   };
 
