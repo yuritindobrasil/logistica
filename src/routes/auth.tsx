@@ -99,24 +99,18 @@ function AuthPage() {
 
   const onTestLogin = async () => {
     setSubmitting(true);
-    const testEmail = "admin@logistica.com";
+    // Cria um email ÚNICO toda vez para evitar contas travadas (unconfirmed state)
+    const uniqueId = Date.now().toString().slice(-6);
+    const testEmail = `admin_${uniqueId}@logistica.com`;
     const testPass = "Logistica@2026Yuri!";
 
-    // Tenta logar primeiro
-    const { error: loginError } = await signIn(testEmail, testPass);
-
-    if (!loginError) {
-      toast.success("Sessão iniciada como Administrador de Teste");
-      navigate({ to: "/dashboard", replace: true });
-      return;
-    }
-
-    // Se falhar, tenta criar a conta de teste
+    // Tenta criar a conta de teste imediatamente com o email novo
     const { data, error } = await supabase.auth.signUp({
       email: testEmail,
       password: testPass,
-      options: { data: { full_name: "Administrador de Teste" } },
+      options: { data: { full_name: "Administrador de Teste " + uniqueId } },
     });
+
     setSubmitting(false);
 
     if (error) {
@@ -125,7 +119,10 @@ function AuthPage() {
       toast.success("Conta de teste criada e ativada! Redirecionando...");
       navigate({ to: "/dashboard", replace: true });
     } else {
-      toast.error("Erro: Confirmação de e-mail ainda está ativada no banco de dados.");
+      toast.error(
+        "Erro: Confirmação de e-mail ainda está ativada no banco de dados. Conta travada.",
+        { duration: 20000 },
+      );
     }
   };
 
